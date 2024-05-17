@@ -190,7 +190,7 @@ body{
     background-color: #284123;
 }
 
-.mt-4, .mt-5{
+.mt-4, .mt-5, .form-label{
     color:rgb(255, 240, 210);
 }
 
