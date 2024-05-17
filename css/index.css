@@ -245,32 +245,6 @@ body{
     padding: 5%;
 }
 
-.wrapper{
-    max-width: 65%;
-    margin: 0 auto;
-    margin-bottom: 20px;
-}
-
-.news-main{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2fr 1fr);
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-}
-.news-main article{
-    padding: 20px;
-    }
-    .video{
-        border-radius: 20px;
-        transition: transform 0.3s ease;
-        }
-        .col:hover .video{
-            -webkit-transform:scale(1.2);
-            transform:scale(1.2);
-        }
-
 .tz, .co, .tp{
     font-family:'Josefin Sans', sans-serif;
     color:rgb(255, 240, 210);
