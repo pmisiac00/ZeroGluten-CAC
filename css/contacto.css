@@ -370,7 +370,6 @@ textarea.form-control {
     .intro {
         flex-direction: column;
         align-items: center;
-        width:100%;
     }
 
     .intro-box {
