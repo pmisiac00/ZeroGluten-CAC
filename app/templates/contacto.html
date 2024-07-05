@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Favicon-->
+    <link rel="icon" href="img/Logo-Web.png" type="image/x-icon">
+
+    <!--Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!--CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all-zerogluten.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css') }}">
+
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!--Google fonts-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Yeseva+One&display=swap"
+        rel="stylesheet">
+    <title>Contactos</title>
+</head>
+
+<body>
+    <!-- barra de navegacion + marca -->
+    <header>
+        <nav class="navbar navbar-expand-xl">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html">ZeroGluten</a>
+
+                <!-- menu desplegable - offcanvas -->
+                <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!--contenido del menu-->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                    aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">ZeroGluten</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+
+                    <div class="offcanvas-body">
+                        <!-- lista: items con submenu -->
+                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-1">
+                            <!-- inicio -->
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="index.html">
+                                    Inicio
+                                </a>
+                            </li>
+                            <!-- restaurantes   -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Restaurantes
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="restaurantes.html">
+                                            Mapa interactivo
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- tiendas -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Tienda
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="tiendas.html">
+                                            Tiendas en tu provincia
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            Productos online
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- preg frecuentes -->
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="preguntas_frecuentes.html">
+                                    Preguntas frecuentes
+                                </a>
+                            </li>
+                            <!-- contacto -->
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="contacto.html">
+                                    Contacto
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- pagina de contacto - formulario-->
+    <div class="intro">
+        <!--columna izq-->
+        <div class="intro-box container-fluid">
+            <p class="epi-left">¿Tenés alguna consulta?</p>
+            <p class="title-left">Contáctate con <br> nosotros</p>
+            <p class="body-left">Si tenés alguna pregunta o inquietud sobre cómo funcionan los servicios que ofrecemos o
+                si querés dejarnos un comentario sobre cómo fue tu experiencia recibida con nuestros partners
+                gastronómicos, completá el formulario de contacto aquí debajo. </p>
+            <button class="btn-page" onclick="scrollToForm()">¡CONTÁCTANOS!</button>
+        </div>
+        <!--columna der-->
+        <div class="intro-box container-fluid">
+            <p class="epi-right">¿Conocés nuestras redes?</p>
+            <p class="title-right">Encontranos en tu <br> red social favorita</p>
+            <ul class="social-links">
+                <li><a href="#">Facebook</a></li>
+                <li><a href="#">Instagram</a></li>
+                <li><a href="#">Tik Tok</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!--formulario contacto-->
+    <div class="background">
+        <div class="contact-box container-fluid">
+            <p class="title-form">¡Contáctate con nuestro equipo!</p>
+            <p class="text-form">Esperamos tu opinión o consulta con ansías. Te responderemos lo antes posible!</p>
+            <form id="contactForm" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="name">Nombre:</label>
+                    <input type="text" id="name" name="Nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="Email" required>
+                </div>
+                <div class="form-group">
+                    <label>Motivo de Contacto:</label>
+                    <div class="radio-group">
+                        <div class="form-check">
+                            <input type="radio" id="duda" name="motivo" value="Consulta" required>
+                            <label for="duda">Duda/Consulta</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" id="opinion" name="motivo" value="Opinion" required>
+                            <label for="opinion">Opinión</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" id="reclamo" name="motivo" value="reclamo" required>
+                            <label for="reclamo">Reclamo</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="servicio">Servicio que utilizaste:</label>
+                    <select id="servicio" name="servicio">
+                        <option value="Tienda online">Tienda Online</option>
+                        <option value="Restaurantes">Restaurantes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ubicacion">¿Desde dónde nos contactás?</label>
+                    <select id="ubicacion" name="ubicacion">
+                        <option value="Buenos Aires - GBA">Buenos Aires - GBA</option>
+                        <option value="Buenos Aires - Interior">Buenos Aires - Interior</option>
+                        <option value="CABA">CABA</option>
+                        <option value="Catamarca">Catamarca</option>
+                        <option value="Chaco">Chaco</option>
+                        <option value="Chubut">Chubut</option>
+                        <option value="Cordoba">Córdoba</option>
+                        <option value="Corrientes">Corrientes</option>
+                        <option value="Entre Ríos">Entre Ríos</option>
+                        <option value="Formosa">Formosa</option>
+                        <option value="Jujuy">Jujuy</option>
+                        <option value="LaPampa">La Pampa</option>
+                        <option value="LaRioja">La Rioja</option>
+                        <option value="Mendoza">Mendoza</option>
+                        <option value="RíoNegro">Río Negro</option>
+                        <option value="Salta">Salta</option>
+                        <option value="SanJuan">San Juan</option>
+                        <option value="SanLuis">San Luis</option>
+                        <option value="SantaCruz">Santa Cruz</option>
+                        <option value="SantaFe">Santa Fe</option>
+                        <option value="SantiagodelEstero">Santiado del Estero</option>
+                        <option value="TierradelFuego">Tierra del Fuego</option>
+                        <option value="Tucuman">Tucumán</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mensaje">Mensaje:</label>
+                    <textarea id="mensaje" name="mensaje" rows="4" required></textarea>
+                </div>
+                <div class="form-group form-check">
+                    <div style="display: inline-flex">
+                        <input type="checkbox" name="suscribir" id="suscribir" class="form-check-input">
+                        <label for="suscribir" class="form-check-label">¿Deseas suscribirte a nuestro newsletter?
+                            Recibirás novedades y promociones de nuestros servicios.</label>
+                    </div>
+                </div>
+                <div class="form-group form-check">
+                    <div style="display: inline-flex">
+                        <input type="checkbox" id="aceptar" name="aceptar" class="form-check-input" required>
+                        <label for="aceptar" class="form-check-label">Acepto los terminos y condiciones de
+                            privacidad.</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">ENVIAR</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- scritps -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+    <script src="{{ url_for('static', filename=js/validar-form.js') }}"></script>
+
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2">
+                    <span class="title-empresa">Nuestra empresa</span>
+                    <ul class="footer-list">
+                        <li><a href="quienes_somos.html">Quiénes Somos</a></li>
+                        <li><a href="">Trabaja con Nosotros</a></li>
+                        <li><a href="">Términos y Condiciones</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <span class="title-servicios">Nuestros servicios</span>
+                    <ul class="footer-list">
+                        <li><a href="">Restaurantes patrocinados</a></li>
+                        <li><a href="">Tiendas patrocinadas</a></li>
+                        <li><a href="">Mapa interactivo</a></li>
+                        <li><a href="">Blog - Recetario</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <span class="title-ayuda">¿Te ayudamos?</span>
+                    <ul class="footer-list">
+                        <li><a href="">Preguntas frecuentes</a></li>
+                        <li><a href="">Contacto</a></li>
+                        <li><a href="">Garantías y Devoluciones</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <span class="title-redes">Nuestras redes</span>
+                    <div class="d-flex flex-wrap"></div>
+                    <a href="" class="social-icon"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+                <div class="col-md-2 offset-md-1">
+                    <span class="quinta-columna"></span>
+                    <ul class="footer-list">
+                        <li><a href="">Política de Privacidad</a></li>
+                        <li><a href="">Política de Cookies</a></li>
+                        <li><a href="">Configuración de Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <hr class="footer-divider">
+                    <p class="footer-brand">ZeroGluten &copy; Todos los derechos reservados. 2024.</p>
+                </div>
+            </div>
+        </div>    
+    </footer>
+</body>
