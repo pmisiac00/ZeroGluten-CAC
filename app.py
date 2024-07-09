@@ -65,5 +65,59 @@ def contacto():
 
     return jsonify({'status': 'success', 'numero_consulta': numero_consulta})
 
+# Ruta para obtener todos los registros (Read)
+@app.route('/consultas', methods=['GET'])
+def get_consultas():
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM contactos")
+    consultas = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify(consultas)
+
+# Ruta para actualizar un registro (Update)
+@app.route('/consultas/<numero_consulta>', methods=['PUT'])
+def update_consulta(numero_consulta):
+    data = request.json
+    nombre = data['nombre']
+    email = data['email']
+    motivo_contacto = data['motivo_contacto']
+    serv_utilizado = data['serv_utilizado']
+    ubicacion = data['ubicacion']
+    mensaje = data['mensaje']
+    newsletter = data['newsletter']
+
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+
+    query = """
+    UPDATE contactos
+    SET nombre = %s, email = %s, motivo_contacto = %s, serv_utilizado = %s, ubicacion = %s, mensaje = %s, newsletter = %s
+    WHERE numero_consulta = %s
+    """
+    cursor.execute(query, (nombre, email, motivo_contacto, serv_utilizado, ubicacion, mensaje, newsletter, numero_consulta))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({'status': 'success'})
+
+# Ruta para borrar un registro (Delete)
+@app.route('/consultas/<numero_consulta>', methods=['DELETE'])
+def delete_consulta(numero_consulta):
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+
+    query = "DELETE FROM contactos WHERE numero_consulta = %s"
+    cursor.execute(query, (numero_consulta,))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({'status': 'success'})
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -13,8 +13,9 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <!--CSS-->
-    <link rel="stylesheet" href="css/all-zerogluten.css">
-    <link rel="stylesheet" href="css/contacto.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all-zerogluten.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contacto.css') }}">
+
 
     <!--Font Awesome-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -227,7 +228,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
-    <script src="js/validar-form.js"></script>
+    <script src="{{ url_for('static', filename='js/validar-form.js') }}"></script>
 
 
     <footer>
