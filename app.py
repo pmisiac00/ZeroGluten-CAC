@@ -1,123 +1,109 @@
-from flask import Flask, request, jsonify, render_template
-from flask_mail import Mail, Message
-import mysql.connector
+from flask import Flask, render_template, request, redirect, url_for, flash
+from models_form import db, Formulario
 from datetime import datetime
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import os
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/form_contacto_db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.urandom(24)
 
-# Configuración de Flask-Mail
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'zerogluten.adm@gmail.com'
-app.config['MAIL_PASSWORD'] = 'ZeroGluten.CAC24'
+db.init_app(app)
 
-mail = Mail(app)
-
-# Configuración de la base de datos
-db_config = {
-    'user': 'root',
-    'password': '',
-    'host': 'localhost',
-    'database': 'form_contacto_db'
-}
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def index():
     return render_template('contacto.html')
 
 @app.route('/contacto', methods=['POST'])
-def contacto():
-    data = request.json
-    nombre = data['nombre']
-    email = data['email']
-    motivo_contacto = data['motivo_contacto']
-    serv_utilizado = data['serv_utilizado']
-    ubicacion = data['ubicacion']
-    mensaje = data['mensaje']
-    newsletter = data['newsletter']
-    created_at = datetime.now()
+def contact():
+    numero_consulta = f"A{str(Formulario.query.count() + 1).zfill(3)}"
+    nombre = request.form['nombre']
+    email = request.form['email']
+    motivo_contacto = request.form['motivo_contacto']
+    serv_utilizado = request.form['serv_utilizado']
+    ubicacion = request.form['ubicacion']
+    mensaje = request.form['mensaje']
+    newsletter = 'Sí' if 'newsletter' in request.form else 'No'
+    
+    nuevo_formulario = Formulario(
+        numero_consulta=numero_consulta,
+        nombre=nombre,
+        email=email,
+        motivo_contacto=motivo_contacto,
+        serv_utilizado=serv_utilizado,
+        ubicacion=ubicacion,
+        mensaje=mensaje,
+        newsletter=newsletter
+    )
+    db.session.add(nuevo_formulario)
+    db.session.commit()
+    
+    enviar_correo_smtp(email)
+    
+    flash('Formulario enviado correctamente.')
+    return redirect(url_for('index'))
 
-    # Conectar a la base de datos
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor()
+def enviar_correo_smtp(destinatario):
+    remitente = "zerogluten.adm@gmail.com"
+    servidor_smtp = "smtp.elasticemail.com"
+    puerto_smtp = 2525  
+    usuario_smtp = "zerogluten.adm@gmail.com"
+    password_smtp = "976D518CD6764CBE48D5ABF5C90186874129"
 
-    # Generar el número de consulta
-    cursor.execute("SELECT COUNT(*) FROM contactos")
-    count = cursor.fetchone()[0]
-    numero_consulta = f"A{count:03d}"
+    mensaje = MIMEMultipart()
+    mensaje['From'] = remitente
+    mensaje['To'] = destinatario
+    mensaje['Subject'] = "Recepción de formulario de contacto - ZeroGluten"
+    cuerpo = "Hola, \n\nGracias por contactarnos. Hemos recibido tu formulario de contacto y nos pondremos en contacto contigo pronto.\n\nSaludos,\nEquipo ZeroGluten."
+    mensaje.attach(MIMEText(cuerpo, 'plain'))
 
-    # Insertar los datos en la tabla
-    query = """
-    INSERT INTO contactos (numero_consulta, nombre, email, motivo_contacto, serv_utilizado, ubicacion, mensaje, newsletter, created_at)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """
-    cursor.execute(query, (numero_consulta, nombre, email, motivo_contacto, serv_utilizado, ubicacion, mensaje, newsletter, created_at))
-    conn.commit()
+    try:
+        with smtplib.SMTP(servidor_smtp, puerto_smtp) as server:
+            server.login(usuario_smtp, password_smtp)
+            server.sendmail(remitente, destinatario, mensaje.as_string())
+            print("Correo enviado correctamente")
+    except Exception as e:
+        print(f"Error al enviar correo: {e}")
 
-    cursor.close()
-    conn.close()
+@app.route('/contacto', methods=['GET'])
+def obtener_contactos():
+    contactos = Formulario.query.all()
+    return render_template('contactos.html', contactos=contactos)
 
-    # Configura y envía el correo de confirmación
-    msg = Message('Confirmación de recepción', sender='zerogluten.adm@gmail.com', recipients=[email])
-    msg.body = f'Gracias por contactarnos, hemos recibido tu mensaje. Tu número de consulta es {numero_consulta}.'
-    mail.send(msg)
+@app.route('/contacto/<int:id>', methods=['GET'])
+def obtener_contacto(id):
+    contacto = Formulario.query.get_or_404(id)
+    return render_template('contacto.html', contacto=contacto)
 
-    return jsonify({'status': 'success', 'numero_consulta': numero_consulta})
+@app.route('/contacto/<int:id>/editar', methods=['GET', 'POST'])
+def editar_contacto(id):
+    contacto = Formulario.query.get_or_404(id)
+    if request.method == 'POST':
+        contacto.nombre = request.form['nombre']
+        contacto.email = request.form['email']
+        contacto.motivo_contacto = request.form['motivo_contacto']
+        contacto.serv_utilizado = request.form['serv_utilizado']
+        contacto.ubicacion = request.form['ubicacion']
+        contacto.mensaje = request.form['mensaje']
+        contacto.newsletter = 'Sí' if 'newsletter' in request.form else 'No'
+        db.session.commit()
+        flash('Contacto actualizado correctamente.')
+        return redirect(url_for('obtener_contactos'))
+    return render_template('editar_contacto.html', contacto=contacto)
 
-# Ruta para obtener todos los registros (Read)
-@app.route('/consultas', methods=['GET'])
-def get_consultas():
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM contactos")
-    consultas = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify(consultas)
-
-# Ruta para actualizar un registro (Update)
-@app.route('/consultas/<numero_consulta>', methods=['PUT'])
-def update_consulta(numero_consulta):
-    data = request.json
-    nombre = data['nombre']
-    email = data['email']
-    motivo_contacto = data['motivo_contacto']
-    serv_utilizado = data['serv_utilizado']
-    ubicacion = data['ubicacion']
-    mensaje = data['mensaje']
-    newsletter = data['newsletter']
-
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor()
-
-    query = """
-    UPDATE contactos
-    SET nombre = %s, email = %s, motivo_contacto = %s, serv_utilizado = %s, ubicacion = %s, mensaje = %s, newsletter = %s
-    WHERE numero_consulta = %s
-    """
-    cursor.execute(query, (nombre, email, motivo_contacto, serv_utilizado, ubicacion, mensaje, newsletter, numero_consulta))
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
-    return jsonify({'status': 'success'})
-
-# Ruta para borrar un registro (Delete)
-@app.route('/consultas/<numero_consulta>', methods=['DELETE'])
-def delete_consulta(numero_consulta):
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor()
-
-    query = "DELETE FROM contactos WHERE numero_consulta = %s"
-    cursor.execute(query, (numero_consulta,))
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
-    return jsonify({'status': 'success'})
+@app.route('/contacto/<int:id>/eliminar', methods=['POST'])
+def eliminar_contacto(id):
+    contacto = Formulario.query.get_or_404(id)
+    db.session.delete(contacto)
+    db.session.commit()
+    flash('Contacto eliminado correctamente.')
+    return redirect(url_for('obtener_contactos'))
 
 if __name__ == '__main__':
     app.run(debug=True)
